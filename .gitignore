@@ -90,5 +90,5 @@ fastlane/test_output
 iOSInjectionProject/
 
 # Misc
-.db/
+db/
 .DS_Store
