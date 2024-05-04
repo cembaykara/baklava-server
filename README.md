@@ -17,7 +17,7 @@
 		connectionString: "[YOUR_MONGO_HOST]"), as: .mongo)
  ```
 
- To easily interact with the Baklava Server from a client, you can use the [Baklava Swift SDK]("https://github.com/cembaykara/baklava-swift"). It provides convenient methods for accessing the server's endpoints and handling responses.
+ To easily interact with the Baklava Server from a client, you can use the [Baklava Swift SDK](https://github.com/cembaykara/baklava-swift). It provides convenient methods for accessing the server's endpoints and handling responses.
 
 ---
 #### Contributing and Development
