@@ -20,5 +20,5 @@
  To easily interact with the Baklava Server from a client, you can use the [Baklava Swift SDK]("https://github.com/cembaykara/baklava-swift"). It provides convenient methods for accessing the server's endpoints and handling responses.
 
 ---
-**Contributing and Development**
+#### Contributing and Development
  We welcome contributions to Baklava! If you have improvements or additional features in mind, we encourage you to submit a pull request.
