@@ -89,5 +89,6 @@ fastlane/test_output
 
 iOSInjectionProject/
 
-# databse
+# Misc
 .db/
+.DS_Store
