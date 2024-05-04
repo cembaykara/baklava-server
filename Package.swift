@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "FeatureFlagsTest",
+    name: "baklava-server",
     platforms: [
        .macOS(.v13)
     ],
@@ -19,14 +19,6 @@ let package = Package(
                 .product(name: "Vapor", package: "vapor"),
 				.product(name: "Fluent", package: "fluent"),
 				.product(name: "FluentMongoDriver", package: "fluent-mongo-driver"),
-            ],
-            swiftSettings: swiftSettings
-        ),
-        .testTarget(
-            name: "AppTests",
-            dependencies: [
-                .target(name: "App"),
-                .product(name: "XCTVapor", package: "vapor"),
             ],
             swiftSettings: swiftSettings
         )
