@@ -8,16 +8,18 @@
 import Foundation
 import Vapor
 import Fluent
+import JWT
 
 struct FeatureFlagController: RouteCollection {
 	
 	func boot(routes: RoutesBuilder) throws {
 		let flagsRoute = routes.grouped("flags")
-		flagsRoute.post(use: create)
-		flagsRoute.put(":id", use: update)
-		flagsRoute.get(":id", use: getFlag)
-		flagsRoute.get(use: list)
-		flagsRoute.delete(":id", use: delete)
+        let protectedRoutes = flagsRoute.grouped(AuthMiddleware())
+        protectedRoutes.post(use: create)
+        protectedRoutes.put(":id", use: update)
+        protectedRoutes.get(":id", use: getFlag)
+        protectedRoutes.get(use: list)
+        protectedRoutes.delete(":id", use: delete)
 	}
 	
 	@Sendable func create(req: Request) async throws -> FeatureFlag {

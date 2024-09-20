@@ -92,3 +92,8 @@ iOSInjectionProject/
 # Misc
 db/
 .DS_Store
+.env
+
+# Ignore user-specific scheme files
+*.xcuserdatad/
+*.xcuserstate
