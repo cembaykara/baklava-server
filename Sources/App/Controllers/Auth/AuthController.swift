@@ -40,7 +40,7 @@ struct AuthController: RouteCollection {
         return LoginResponse(authToken: signedToken)
     }
     
-    @Sendable func register(req: Request) async throws -> HTTPStatus {
+    @Sendable func register(req: Request) async throws -> RegisterResponse {
         let registerRequest = try req.content.decode(RegisterRequest.self)
         
         let existingUser = try await User.query(on: req.db)
@@ -61,8 +61,13 @@ struct AuthController: RouteCollection {
             passwordHash: hash
         )
         
-        try await newUser.create(on: req.db)
+        do {
+            try await newUser.create(on: req.db)
+        } catch {
+            throw Abort(.internalServerError)
+        }
         
-        return .ok
+        
+        return RegisterResponse(success: true)
     }
 }
