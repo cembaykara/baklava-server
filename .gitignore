@@ -4,6 +4,7 @@
 
 ## User settings
 xcuserdata/
+xcshareddata/
 
 ## compatibility with Xcode 8 and earlier (ignoring not required starting Xcode 9)
 *.xcscmblueprint
@@ -92,3 +93,8 @@ iOSInjectionProject/
 # Misc
 db/
 .DS_Store
+.env
+
+# Ignore user-specific scheme files
+*.xcuserdatad/
+*.xcuserstate
