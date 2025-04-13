@@ -83,6 +83,12 @@ USER vapor:vapor
 # Let Docker bind to port 8080
 EXPOSE 8080
 
+# Check if .env file exists and set the environment variable accordingly
+RUN if [ -f /app/.env ]; then \
+        echo "Setting VAPOR_ENV_PATH to /app/.env" && \
+        echo "VAPOR_ENV_PATH=/app/.env" >> /etc/environment; \
+    fi
+
 # Start the Vapor service when the image is run, default to listening on 8080 in production environment
 ENTRYPOINT ["./App"]
 CMD ["serve", "--env", "production", "--hostname", "0.0.0.0", "--port", "8080"]
