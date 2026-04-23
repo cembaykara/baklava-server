@@ -9,6 +9,13 @@ import Foundation
 import Vapor
 import Fluent
 
+/// `Sendable` copy of persisted fields for the `FlagStore` actor.
+struct FeatureFlagSnapshot: Sendable, Equatable {
+    let id: UUID
+    let name: String
+    let enabled: Bool
+}
+
 final class FeatureFlag: Model, Content {
 	static let schema = "feature_flags"
 	
@@ -23,4 +30,16 @@ final class FeatureFlag: Model, Content {
 		self.name = name
 		self.enabled = enabled
 	}
+}
+
+extension FeatureFlag {
+    /// Copies current field values into a snapshot for the in-memory `FlagStore` actor.
+    func makeSnapshot() -> FeatureFlagSnapshot? {
+        guard let id = id else { return nil }
+        return FeatureFlagSnapshot(id: id, name: name, enabled: enabled)
+    }
+
+    static func fromSnapshot(_ snapshot: FeatureFlagSnapshot) -> FeatureFlag {
+        FeatureFlag(id: snapshot.id, name: snapshot.name, enabled: snapshot.enabled)
+    }
 }

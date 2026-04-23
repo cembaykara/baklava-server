@@ -12,6 +12,12 @@ func configure(_ app: Application) async throws {
     // Configure MongoDB database
 	try app.databases.use(.mongo(
 		connectionString: dbURI), as: .mongo)
+
+    let flagStore = FlagStore()
+    app.flagStore = flagStore
+    let loaded = try await FeatureFlag.query(on: app.db).all()
+    let snapshots = loaded.compactMap { $0.makeSnapshot() }
+    await flagStore.reload(snapshots: snapshots)
     
     //Add JWT Signer
     await app.jwt.keys.add(hmac: .init(stringLiteral: signingKey), digestAlgorithm: .sha256)
