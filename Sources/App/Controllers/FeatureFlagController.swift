@@ -22,14 +22,14 @@ struct FeatureFlagController: RouteCollection {
         protectedRoutes.delete(":id", use: delete)
 	}
 	
-	@Sendable func create(req: Request) async throws -> FeatureFlag {
+	@Sendable func create(req: Request) async throws -> Response<FeatureFlagResource> {
 		let flag = try req.content.decode(FeatureFlag.self)
 		try await flag.create(on: req.db)
         guard let snapshot = flag.makeSnapshot() else {
             throw Abort(.internalServerError)
         }
         await req.application.flagStore.upsert(snapshot)
-		return FeatureFlag.fromSnapshot(snapshot)
+		return Response(data: snapshot.toResource())
 	}
 	
 	@Sendable func update(req: Request) async throws -> HTTPStatus {
@@ -39,36 +39,45 @@ struct FeatureFlagController: RouteCollection {
 			throw Abort(.badRequest)
 		}
 
-        guard await req.application.flagStore.get(id: id) != nil else {
+        guard let existing = await req.application.flagStore.get(id: id) else {
             throw Abort(.notFound)
         }
+        
+        let now = Date()
 		
 		try await FeatureFlag.query(on: req.db)
 			.filter(\.$id == id)
 			.set(\.$name, to: updateWith.name)
 			.set(\.$enabled, to: updateWith.enabled)
+            .set(\.$updatedAt, to: now)
 			.update()
 
         await req.application.flagStore.upsert(
-            FeatureFlagSnapshot(id: id, name: updateWith.name, enabled: updateWith.enabled)
+            FeatureFlagSnapshot(
+                id: id,
+                name: updateWith.name,
+                enabled: updateWith.enabled,
+                createdAt: existing.createdAt,
+                updatedAt: now
+            )
         )
 		
 		return .ok
 	}
 	
-	@Sendable func getFlag(req: Request) async throws -> FeatureFlag {
+	@Sendable func getFlag(req: Request) async throws -> Response<FeatureFlagResource> {
         guard let id = req.parameters.get("id", as: UUID.self) else {
             throw Abort(.badRequest)
         }
         guard let snapshot = await req.application.flagStore.get(id: id) else {
 			throw Abort(.notFound)
 		}
-		return FeatureFlag.fromSnapshot(snapshot)
+		return Response(data: snapshot.toResource())
 	}
 	
-	@Sendable func list(req: Request) async throws -> [FeatureFlag] {
+	@Sendable func list(req: Request) async throws -> PageResponse<FeatureFlagResource> {
         let snapshots = await req.application.flagStore.list()
-        return snapshots.map(FeatureFlag.fromSnapshot)
+        return PageResponse(data: snapshots.map { $0.toResource() })
 	}
 	
 	@Sendable func delete(req: Request) async throws -> HTTPStatus {

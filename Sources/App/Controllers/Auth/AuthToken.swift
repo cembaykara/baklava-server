@@ -29,16 +29,16 @@ struct AuthToken: JWTPayload {
 }
 
 struct AuthMiddleware: AsyncMiddleware {
-    func respond(to request: Request, chainingTo next: AsyncResponder) async throws -> Response {
+    func respond(to request: Request, chainingTo next: AsyncResponder) async throws -> Vapor.Response {
         guard let bearer = request.headers.bearerAuthorization else {
-            return Response(status: .unauthorized)
+            return Vapor.Response(status: .unauthorized)
         }
         
         do {
             try await request.jwt.verify(bearer.token, as: AuthToken.self)
             return try await next.respond(to: request)
         } catch {
-            return Response(status: .unauthorized)
+            return Vapor.Response(status: .unauthorized)
         }
     }
 }
